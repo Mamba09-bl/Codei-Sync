@@ -30,10 +30,12 @@
     "timers-promises": "^1.0.1",
     "tls": "^0.0.1"
   },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.18",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.1",
-    "tailwindcss": "^4"
-  }
+ "devDependencies": {
+  "tailwindcss": "^3.4.17",
+  "postcss": "^8.4.35",
+  "autoprefixer": "^10.4.20",
+  "eslint": "^9",
+  "eslint-config-next": "16.1.1"
+}
+
 }
