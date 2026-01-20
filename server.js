@@ -44,29 +44,31 @@
 //   }
 // };
 
-// startServer(); agha jeee
+// startServer(); agha jeee done final
 
 const express = require("express");
 const http = require("http");
+const next = require("next");
 const initSocket = require("./socket");
 const connectDB = require("./lib/db");
+
+const dev = process.env.NODE_ENV !== "production";
+const appNext = next({ dev });
+const handle = appNext.getRequestHandler();
 
 const app = express();
 const server = http.createServer(app);
 
-const startServer = async () => {
-  try {
-    await connectDB();
-    initSocket(server);
+appNext.prepare().then(async () => {
+  await connectDB();
+  initSocket(server);
 
-    const PORT = process.env.PORT || 5000;
-    server.listen(PORT, () => {
-      console.log("Server running on port", PORT);
-    });
-  } catch (err) {
-    console.error("Server failed to start:", err);
-    process.exit(1);
-  }
-};
+  app.all("*", (req, res) => {
+    return handle(req, res);
+  });
 
-startServer();
+  const PORT = process.env.PORT || 5000;
+  server.listen(PORT, () => {
+    console.log("🚀 Server + Socket.IO running on port", PORT);
+  });
+});
