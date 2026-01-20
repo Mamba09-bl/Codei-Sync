@@ -46,29 +46,48 @@
 
 // startServer(); agha jeee done finalaa
 
+// const express = require("express");
+// const http = require("http");
+// const next = require("next");
+// const initSocket = require("./lib/socket");
+// const connectDB = require("./lib/db");
+
+// const dev = process.env.NODE_ENV !== "production";
+// const appNext = next({ dev });
+// const handle = appNext.getRequestHandler();
+
+// const app = express();
+// const server = http.createServer(app);
+
+// appNext.prepare().then(async () => {
+//   await connectDB();
+//   initSocket(server);
+
+//   app.all("*", (req, res) => {
+//     return handle(req, res);
+//   });
+
+//   const PORT = process.env.PORT || 5000;
+//   server.listen(PORT, () => {
+//     console.log("🚀 Server + Socket.IO running on port", PORT);
+//   });
+// }); done
+
 const express = require("express");
 const http = require("http");
-const next = require("next");
-const initSocket = require("./socket");
 const connectDB = require("./lib/db");
-
-const dev = process.env.NODE_ENV !== "production";
-const appNext = next({ dev });
-const handle = appNext.getRequestHandler();
+const initSocket = require("./lib/socket");
 
 const app = express();
 const server = http.createServer(app);
 
-appNext.prepare().then(async () => {
+const PORT = process.env.PORT || 10000;
+
+(async () => {
   await connectDB();
   initSocket(server);
 
-  app.all("*", (req, res) => {
-    return handle(req, res);
-  });
-
-  const PORT = process.env.PORT || 5000;
   server.listen(PORT, () => {
-    console.log("🚀 Server + Socket.IO running on port", PORT);
+    console.log("Server running on port", PORT);
   });
-});
+})();
