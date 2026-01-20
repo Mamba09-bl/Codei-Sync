@@ -1,9 +1,9 @@
 "use client";
-
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
-import { io } from "socket.io-client";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { socket } from "@/lib/clientSocket";
 import Editor from "@monaco-editor/react";
+import { useRouter } from "next/navigation";
 import {
   MessageSquare,
   Users,
@@ -21,9 +21,6 @@ export default function Home() {
   const params = useParams();
   const roomId = params.id;
   const name = params.name;
-
-  const socketRef = useRef(null);
-
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [users, setUser] = useState([]);
@@ -31,7 +28,7 @@ export default function Home() {
   const [roomInfo, setRoomInfo] = useState(null);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState("chat");
+  const [activeTab, setActiveTab] = useState("chat"); // 'chat' or 'users'
   const [reviewText, setReview] = useState("");
   const [explainText, setExplain] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -41,132 +38,151 @@ export default function Home() {
   const [language, setLanguage] = useState("javascript");
 
   const router = useRouter();
-
   const isHost = roomInfo?.hostUsername === name;
   const isAllow = roomInfo?.editableUsers?.includes(name);
   const canEdit = isHost || isAllow;
-
   const showToast = (message) => {
     setToast(message);
     setTimeout(() => setToast(null), 3000);
   };
 
-  // 🔌 INIT SOCKET (ONCE)
+  // const userCanEdit = roomInfo?.editableUsers.includes(users.username);
+  // const hasCommon = users.some((item) =>
+  //   roomInfo?.editableUsers.includes(item.username)
+  // );
   useEffect(() => {
-    socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
-      transports: ["websocket"],
-      withCredentials: true,
-    });
+    if (!roomId || !name) return;
+
+    socket.emit("join-room", { roomId, name });
 
     return () => {
-      socketRef.current.disconnect();
-    };
-  }, []);
-
-  // JOIN / LEAVE ROOM
-  useEffect(() => {
-    if (!roomId || !name || !socketRef.current) return;
-
-    socketRef.current.emit("join-room", { roomId, name });
-
-    return () => {
-      socketRef.current.emit("leave-room", roomId, name);
+      socket.emit("leave-room", roomId, name);
     };
   }, [roomId, name]);
 
-  // MESSAGES
   useEffect(() => {
-    if (!socketRef.current) return;
-
-    socketRef.current.on("receive-message", (msg) => {
+    // socket.emit("join-room", { roomId, name });
+    socket.on("receive-message", (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
 
-    socketRef.current.on("previous-messages", (msgs) => {
+    socket.on("previous-messages", (msgs) => {
       setMessages(msgs);
     });
 
     return () => {
-      socketRef.current.off("receive-message");
-      socketRef.current.off("previous-messages");
+      socket.off("receive-message");
+      socket.off("previous-messages");
     };
   }, []);
 
-  // CODE SYNC
   useEffect(() => {
-    if (!socketRef.current) return;
-
-    socketRef.current.on("display-code", setCode);
-    socketRef.current.on("previous-code", setCode);
-
-    return () => {
-      socketRef.current.off("display-code");
-      socketRef.current.off("previous-code");
-    };
-  }, []);
-
-  // USERS / HOST
-  useEffect(() => {
-    if (!socketRef.current) return;
-
-    socketRef.current.on("room-users", setUser);
-    socketRef.current.on("host-changed", ({ newHost }) =>
-      showToast(`${newHost} is now the host`),
-    );
-
-    return () => {
-      socketRef.current.off("room-users");
-      socketRef.current.off("host-changed");
-    };
-  }, []);
-
-  // ROOM INFO
-  useEffect(() => {
-    if (!socketRef.current) return;
-
-    socketRef.current.on("room-info", (data) => {
-      setRoomInfo(data);
-      if (data.language) setLanguage(data.language);
+    socket.on("display-code", (data) => {
+      setCode(data);
     });
 
     return () => {
-      socketRef.current.off("room-info");
+      socket.off("display-code");
     };
   }, []);
 
-  // JOIN ERROR
   useEffect(() => {
-    if (!socketRef.current) return;
+    socket.on("previous-code", (savedCode) => {
+      setCode(savedCode);
+    });
 
-    socketRef.current.on("join-error", (msg) => {
+    return () => {
+      socket.off("previous-code");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("room-users", (users) => {
+      setUser(users);
+    });
+    socket.on("host-changed", ({ oldHost, newHost }) => {
+      showToast(`${newHost} is now the host`);
+    });
+
+    return () => {
+      socket.emit("leave-room", roomId, name, secHost);
+      socket.off("room-users");
+      socket.off("host-changed");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("host-changed", ({ oldHost, newHost }) => {
+      if (oldHost === newHost) return;
+      // if (newHost === name) return; // don’t tell me I became host
+      showToast(`${newHost} is now the host`);
+    });
+    return () => {
+      socket.off("host-changed");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("room-info", (hostUsername) => {
+      setRoomInfo(hostUsername);
+    });
+
+    return () => {
+      socket.off("room-info");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("room-info", ({ language }) => {
+      setLanguage(language); // ✅ store language
+    });
+
+    return () => {
+      socket.off("room-info");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("join-error", (message) => {
       setError(true);
-      setErrorMessage(msg);
+
+      setErrorMessage(message);
     });
 
     return () => {
-      socketRef.current.off("join-error");
+      socket.off("join-error");
     };
   }, []);
 
   useEffect(() => {
+    console.log(users);
+    // let s = users;
+    let s = users[users.length - 1]?.username;
+    console.log(s);
+
     setsecHost(users[users.length - 1]?.username);
   }, [users]);
 
+  useEffect(() => {
+    console.log("you join the room ", language);
+  }, [language]);
+
   const sendMessage = () => {
     if (!inputMessage.trim()) return;
-
-    socketRef.current.emit("send-message", {
+    socket.emit("send-message", {
       roomId,
       username: name,
       message: inputMessage,
     });
-
     setInputMessage("");
   };
 
   const handleChange = (value) => {
     setCode(value);
-    socketRef.current.emit("run-code", { code: value, roomId });
+    socket.emit("run-code", {
+      code: value,
+      roomId,
+    });
   };
 
   const handleKeyPress = (e) => {
@@ -564,7 +580,7 @@ export default function Home() {
                             {userCanEdit ? (
                               <button
                                 onClick={() => {
-                                  socketRef.current.emit(
+                                  socket.emit(
                                     "remove-user",
                                     name,
                                     user.username,
@@ -579,7 +595,7 @@ export default function Home() {
                             ) : (
                               <button
                                 onClick={() => {
-                                  socketRef.current.emit(
+                                  socket.emit(
                                     "edit-user",
                                     name,
                                     user.username,
