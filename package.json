@@ -5,15 +5,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-   "start": "node server.js",
+    "start": "node server.js",
     "lint": "eslint"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "autoprefixer": "^10.4.20",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "express": "^5.2.1",
     "i": "^0.3.7",
     "jose": "^6.1.3",
     "jsonwebtoken": "^9.0.3",
@@ -21,17 +23,15 @@
     "mongoose": "^9.1.2",
     "next": "16.1.1",
     "openai": "^6.16.0",
+    "postcss": "^8.4.35",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
-    "timers-promises": "^1.0.1",
-    "tls": "^0.0.1",
-
     "tailwindcss": "^3.4.17",
-    "postcss": "^8.4.35",
-    "autoprefixer": "^10.4.20"
+    "timers-promises": "^1.0.1",
+    "tls": "^0.0.1"
   },
   "devDependencies": {
     "eslint": "^9",
