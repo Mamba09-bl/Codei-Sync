@@ -51,6 +51,9 @@ export default function Home() {
   useEffect(() => {
     console.log("roomId:", roomId, "name:", name);
   }, [roomId, name]);
+  useEffect(() => {
+    console.log("RAW PARAMS:", params);
+  }, [params]);
 
   // useEffect(() => {
   //   if (!roomId || !name) return;
@@ -65,6 +68,7 @@ export default function Home() {
     if (!roomId || !name) return;
 
     const onConnect = () => {
+      console.log("EMITTING join-room", { roomId, name });
       socket.emit("join-room", { roomId, name });
     };
 
