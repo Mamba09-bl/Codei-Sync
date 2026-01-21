@@ -21,8 +21,8 @@ import {
 
 export default function Home() {
   const params = useParams();
-  const roomId = params.id;
-  const name = params.name;
+  const roomId = params?.id;
+  const name = params?.name;
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [users, setUser] = useState([]);
@@ -48,10 +48,10 @@ export default function Home() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // const userCanEdit = roomInfo?.editableUsers.includes(users.username);
-  // const hasCommon = users.some((item) =>
-  //   roomInfo?.editableUsers.includes(item.username)
-  // );
+  useEffect(() => {
+    console.log("roomId:", roomId, "name:", name);
+  }, [roomId, name]);
+
   useEffect(() => {
     if (!roomId || !name) return;
 
