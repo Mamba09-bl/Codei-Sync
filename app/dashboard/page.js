@@ -1,38 +1,31 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Code2,
+  Users,
+  Sparkles,
   ArrowRight,
   ArrowLeft,
+  Hash,
+  User,
+  Terminal,
+  Cpu,
+  Globe,
+  ChevronRight,
+  Zap,
 } from "lucide-react";
-import { io } from "socket.io-client";
+import socket from "@/lib/clientSocket";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const router = useRouter();
-  const socketRef = useRef(null);
 
   const [ids, setId] = useState("");
   const [name, setName] = useState("");
+  const [hoveredFeature, setHoveredFeature] = useState(null);
   const [language, setLanguage] = useState(null);
   const [viewMode, setViewMode] = useState("menu");
-
-  // 🔌 INIT SOCKET (ONCE)
-  useEffect(() => {
-    socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
-      transports: ["websocket"],
-      withCredentials: true,
-    });
-
-    socketRef.current.on("room-created", ({ roomId }) => {
-      console.log("Room created:", roomId);
-    });
-
-    return () => {
-      socketRef.current.disconnect();
-    };
-  }, []);
 
   // ✅ CREATE ROOM
   const createRoom = () => {
@@ -41,7 +34,7 @@ export default function Dashboard() {
 
     const newId = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-    socketRef.current.emit("create-room", {
+    socket.emit("create-room", {
       roomId: newId,
       hostUsername: name,
       language,
@@ -57,6 +50,14 @@ export default function Dashboard() {
 
     router.push(`/showCode/${ids}/${name}`);
   };
+
+  useEffect(() => {
+    socket.on("room-created", ({ roomId }) => {
+      console.log("Room created:", roomId);
+    });
+
+    return () => socket.off("room-created");
+  }, []);
 
   return (
     <div className="relative min-h-screen bg-zinc-950 text-zinc-100 overflow-hidden">
