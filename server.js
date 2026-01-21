@@ -90,18 +90,13 @@ await nextApp.prepare();
 const app = express();
 const server = http.createServer(app);
 
-// DB
 await connectDB();
 
-// Socket.io
+// ✅ ONLY THIS
 initSocket(server);
 
-// Forward ALL requests to Next.js
-app.use((req, res) => {
-  return handle(req, res);
-});
+app.use((req, res) => handle(req, res));
 
-// Start server understand
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
