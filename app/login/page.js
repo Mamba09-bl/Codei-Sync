@@ -64,13 +64,27 @@ const App = () => {
     const result = await res.json();
     console.log("i am result", result);
 
+    // if (result.success) {
+    //   // In a real Next.js app, this would be router.push("/login")
+    //   router.push("/dashboard");
+    //   console.log("login done");
+    // } else {
+    //   setErrorMsg("Email or password not problem");
+    //   return;
+    // }
+
     if (result.success) {
-      // In a real Next.js app, this would be router.push("/login")
-      router.push("/dashboard");
-      console.log("login done");
+      setIsSubmitting(true);
+
+      setTimeout(() => {
+        setIsSubmitting(false);
+        router.push("/dashboard");
+      }, 1200);
     } else {
-      setErrorMsg("Email or password not problem");
+      setErrorMsg("Email or password not correct");
+      return;
     }
+
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
