@@ -75,19 +75,30 @@
 
 import express from "express";
 import http from "http";
+import next from "next";
 import connectDB from "./lib/db.js";
 import initSocket from "./lib/socket.js";
+
+const PORT = process.env.PORT || 10000;
+const dev = process.env.NODE_ENV !== "production";
+
+const nextApp = next({ dev });
+const handle = nextApp.getRequestHandler();
+
+await nextApp.prepare();
 
 const app = express();
 const server = http.createServer(app);
 
-const PORT = process.env.PORT || 10000;
+// DB + Socket
+await connectDB();
+initSocket(server);
 
-(async () => {
-  await connectDB();
-  initSocket(server);
+// 🔥 THIS LINE IS WHAT YOU WERE MISSING ss
+app.all("*", (req, res) => {
+  return handle(req, res);
+});
 
-  server.listen(PORT, () => {
-    console.log("Server running on port", PORT);
-  });
-})();
+server.listen(PORT, () => {
+  console.log("Server running on port", PORT);
+});

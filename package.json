@@ -2,11 +2,10 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
+ "scripts": {
+    "dev": "node server.js",
     "build": "next build",
-    "start": "node server.js",
-    "lint": "eslint"
+    "start": "node server.js"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
