@@ -71,7 +71,7 @@
 //   server.listen(PORT, () => {
 //     console.log("🚀 Server + Socket.IO running on port", PORT);
 //   });
-// }); done
+// });
 
 import express from "express";
 import http from "http";
@@ -79,8 +79,8 @@ import next from "next";
 import connectDB from "./lib/db.js";
 import initSocket from "./lib/socket.js";
 
-const PORT = process.env.PORT || 10000;
-const dev = process.env.NODE_ENV !== "production";
+const port = process.env.PORT || 10000;
+const dev = false;
 
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
@@ -90,15 +90,18 @@ await nextApp.prepare();
 const app = express();
 const server = http.createServer(app);
 
-// DB + Socket
+// DB
 await connectDB();
+
+// Socket.io
 initSocket(server);
 
-// 🔥 THIS LINE IS WHAT YOU WERE MISSING ss
-app.all("*", (req, res) => {
+// Next routes
+app.all("/*", (req, res) => {
   return handle(req, res);
 });
 
-server.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+// START SERVER
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
