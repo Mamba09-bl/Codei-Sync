@@ -52,12 +52,30 @@ export default function Home() {
     console.log("roomId:", roomId, "name:", name);
   }, [roomId, name]);
 
+  // useEffect(() => {
+  //   if (!roomId || !name) return;
+
+  //   socket.emit("join-room", { roomId, name });
+
+  //   return () => {
+  //     socket.emit("leave-room", roomId, name);
+  //   };
+  // }, [roomId, name]);
   useEffect(() => {
     if (!roomId || !name) return;
 
-    socket.emit("join-room", { roomId, name });
+    const onConnect = () => {
+      socket.emit("join-room", { roomId, name });
+    };
+
+    if (socket.connected) {
+      onConnect();
+    } else {
+      socket.once("connect", onConnect);
+    }
 
     return () => {
+      socket.off("connect", onConnect);
       socket.emit("leave-room", roomId, name);
     };
   }, [roomId, name]);
@@ -123,25 +141,33 @@ export default function Home() {
       socket.off("host-changed");
     };
   }, []);
+  // twice not
+  // useEffect(() => {
+  //   socket.on("room-info", (hostUsername) => {
+  //     setRoomInfo(hostUsername);
+  //   });
 
+  //   return () => {
+  //     socket.off("room-info");
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   socket.on("room-info", ({ language }) => {
+  //     setLanguage(language); // ✅ store language
+  //   });
+
+  //   return () => {
+  //     socket.off("room-info");
+  //   };
+  // }, []);
   useEffect(() => {
-    socket.on("room-info", (hostUsername) => {
-      setRoomInfo(hostUsername);
+    socket.on("room-info", (data) => {
+      setRoomInfo(data);
+      if (data.language) setLanguage(data.language);
     });
 
-    return () => {
-      socket.off("room-info");
-    };
-  }, []);
-
-  useEffect(() => {
-    socket.on("room-info", ({ language }) => {
-      setLanguage(language); // ✅ store language
-    });
-
-    return () => {
-      socket.off("room-info");
-    };
+    return () => socket.off("room-info");
   }, []);
 
   useEffect(() => {
