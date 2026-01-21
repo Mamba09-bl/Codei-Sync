@@ -73,10 +73,10 @@
 //   });
 // }); done
 
-const express = require("express");
-const http = require("http");
-const connectDB = require("./lib/db");
-const initSocket = require("./lib/socket");
+import express from "express";
+import http from "http";
+import connectDB from "./lib/db.js";
+import initSocket from "./lib/socket.js";
 
 const app = express();
 const server = http.createServer(app);
