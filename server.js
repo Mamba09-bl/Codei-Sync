@@ -96,12 +96,12 @@ await connectDB();
 // Socket.io
 initSocket(server);
 
-// Next routes
-app.all("/*", (req, res) => {
+// Forward ALL requests to Next.js
+app.use((req, res) => {
   return handle(req, res);
 });
 
-// START SERVER
+// Start server understand
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
