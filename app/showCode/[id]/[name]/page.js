@@ -48,13 +48,6 @@ export default function Home() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  useEffect(() => {
-    console.log("roomId:", roomId, "name:", name);
-  }, [roomId, name]);
-  useEffect(() => {
-    console.log("RAW PARAMS:", params);
-  }, [params]);
-
   // useEffect(() => {
   //   if (!roomId || !name) return;
 
@@ -68,7 +61,7 @@ export default function Home() {
     if (!roomId || !name) return;
 
     const onConnect = () => {
-      console.log("EMITTING join-room", { roomId, name });
+      // console.log("EMITTING join-room", { roomId, name });
       socket.emit("join-room", { roomId, name });
     };
 
@@ -195,9 +188,9 @@ export default function Home() {
     setsecHost(users[users.length - 1]?.username);
   }, [users]);
 
-  useEffect(() => {
-    console.log("you join the room ", language);
-  }, [language]);
+  // useEffect(() => {
+  //   console.log("you join the room ", language);
+  // }, [language]);
 
   const sendMessage = () => {
     if (!inputMessage.trim()) return;
@@ -291,7 +284,7 @@ export default function Home() {
             )}
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-500">
-            <span>JavaScript</span>
+            <span>{language}</span>
           </div>
         </div>
         {/* show code ui */}

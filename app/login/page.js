@@ -69,7 +69,7 @@ const App = () => {
       router.push("/dashboard");
       console.log("login done");
     } else {
-      setErrorMsg("Email already exists");
+      setErrorMsg("Email or password not problem");
     }
     setIsSubmitting(true);
     setTimeout(() => {
