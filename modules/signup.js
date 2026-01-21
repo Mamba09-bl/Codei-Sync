@@ -6,4 +6,5 @@ const signupSchema = new mongoose.Schema({
   password: String,
 });
 
-export default mongoose.models.signup || mongoose.model("signup", signupSchema);
+const signup = mongoose.models.signup || mongoose.model("signup", signupSchema);
+export default signup;

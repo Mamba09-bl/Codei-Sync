@@ -27,4 +27,5 @@ const roomSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-module.exports = mongoose.model("Room", roomSchema);
+const role = (module.exports = mongoose.model("Room", roomSchema));
+export default role;

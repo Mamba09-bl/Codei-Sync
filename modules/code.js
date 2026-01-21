@@ -19,4 +19,5 @@ const codeSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-module.exports = mongoose.model("Code", codeSchema);
+const code = (module.exports = mongoose.model("Code", codeSchema));
+export default code;
