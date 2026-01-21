@@ -1,11 +1,11 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const codeSchema = new mongoose.Schema(
   {
     roomId: {
       type: String,
       required: true,
-      unique: true, // one code per room
+      unique: true,
     },
     code: {
       type: String,
@@ -19,5 +19,6 @@ const codeSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const code = (module.exports = mongoose.model("Code", codeSchema));
-export default code;
+const Code = mongoose.models.Code || mongoose.model("Code", codeSchema);
+
+export default Code;
