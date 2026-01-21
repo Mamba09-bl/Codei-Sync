@@ -37,7 +37,7 @@ export default function Home() {
   const [ai, setAi] = useState(false);
   const [secHost, setsecHost] = useState(null);
   const [toast, setToast] = useState(null);
-  const [language, setLanguage] = useState("javascript");
+  const [language, setLanguage] = useState("");
 
   const router = useRouter();
   const isHost = roomInfo?.hostUsername === name;
