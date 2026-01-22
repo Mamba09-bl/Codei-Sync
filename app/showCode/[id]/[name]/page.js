@@ -698,7 +698,7 @@ export default function Home() {
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [users, setUser] = useState([]);
-  const [code, setCode] = useState(`// Write JavaScript here`);
+  const [code, setCode] = useState(``);
   const [roomInfo, setRoomInfo] = useState(null);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -933,7 +933,7 @@ export default function Home() {
             )}
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-500">
-            <span>JavaScript</span>
+            <span></span>
           </div>
         </div>
         {/* show code ui */}
