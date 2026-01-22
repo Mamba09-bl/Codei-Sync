@@ -1,7 +1,7 @@
 "use client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-// import { socket } from "@/lib/clientSocket";
+// import { socket } from "@/lib/clientSocket s";
 import socket from "@/lib/clientSocket";
 
 import Editor from "@monaco-editor/react";
