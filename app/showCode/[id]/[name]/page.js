@@ -828,16 +828,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    console.log(users);
+    // console.log(users);
     // let s = users;
     let s = users[users.length - 1]?.username;
-    console.log(s);
+    // console.log(s);
 
     setsecHost(users[users.length - 1]?.username);
   }, [users]);
 
   useEffect(() => {
-    console.log("you join the room ", language);
+    // console.log("you join the room ", language);
   }, [language]);
 
   const sendMessage = () => {
